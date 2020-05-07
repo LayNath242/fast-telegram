@@ -2,14 +2,13 @@ import os
 
 from telethon import TelegramClient
 from telethon.sessions import StringSession
+from telethon.tl.functions.users import GetFullUserRequest
+
 
 from utils.get_env import api_hash, api_id
 from utils.get_message import get_messages
-from utils.check_file_exit import exit_files
-from utils.create_file import create_filename, create_new_dir
-
-from telethon.tl.types import PeerUser, PeerChat, PeerChannel
-from telethon.tl.custom.file import File
+from utils.dowload_file import download_file, download_profile
+from utils.get_entity import get_entity
 
 
 async def get_all_dialogs(
@@ -18,13 +17,18 @@ async def get_all_dialogs(
 ):
     client = TelegramClient(StringSession(auth_key), api_id, api_hash)
     await client.connect()
+
     data = []
+
     async for dialog in client.iter_dialogs(limit=limit):
         user = {
             "id": str(dialog.entity.id),
             "name": dialog.name
         }
+
         data.append(user)
+        filename = await download_profile(dialog.entity.id, dialog.entity.photo, client, big=True)
+        print(filename)
     return data
 
 
@@ -38,18 +42,13 @@ async def get_all_messages(
     ids,
     from_user
 ):
+
     client = TelegramClient(StringSession(auth_key), api_id, api_hash)
     await client.connect()
 
-    try:
-        entity = await client.get_entity(PeerUser(chat_id))
-    except:
-        try:
-            entity = await client.get_entity(PeerChannel(chat_id))
-        except:
-            entity = await client.get_entity(PeerChat(chat_id))
-
     messages = []
+
+    entity = await get_entity(chat_id, client)
 
     async for message in client.iter_messages(
             entity,
@@ -63,26 +62,12 @@ async def get_all_messages(
         filename = None
 
         if message.media:
-            files = File(message.file)
-
-            dirName = f'./Chat/{chat_id}/'
-            create_new_dir(dirName)
-
-            filename = create_filename(
-                dirName,
-                files.media.media.access_hash,
-                files.media.mime_type
-            )
-            if exit_files(dirName, filename, files.media.mime_type):
-                with open(filename, 'wb') as fd:
-                    async for chunk in client.iter_download(files.media.media):
-                        fd.write(chunk)
+            filename = await download_file(message.file, chat_id, client)
 
         user = await client.get_entity(message.from_id)
         message = get_messages(message, user.username, media=filename)
         messages.append(message)
 
     return messages
-
 
 # 5ea28612fc329b4980f45c39
