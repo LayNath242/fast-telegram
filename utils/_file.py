@@ -12,17 +12,6 @@ def create_filename(direName, fileName, minetype):
     return filename
 
 
-def create_profile_name(dirname, filename, big):
-    create_new_dir(dirname)
-
-    if big is False:
-        filename = f'{dirname}profile/{filename}'
-    else:
-        filename = f'{dirname}profile/{filename}(big)'
-
-    return filename
-
-
 def create_new_dir(dirName):
     dir = './Chat'
     try:
@@ -47,14 +36,6 @@ def exit_files(dirName, filename, mimetype):
     else:
         type = '.unknow'
     path_to_file_list = glob.glob(dirName + '*' + type)
-    for path_to_file in path_to_file_list:
-        if path_to_file == filename:
-            return False
-    return True
-
-
-def exit_profile(dirName, filename):
-    path_to_file_list = glob.glob(dirName + '*' + 'jpg')
     for path_to_file in path_to_file_list:
         if path_to_file == filename:
             return False

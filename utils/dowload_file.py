@@ -1,7 +1,8 @@
+import os
+
 from telethon.tl.custom.file import File
 
-from utils._file import create_filename, create_new_dir, exit_files, create_profile_name
-from utils.get_entity import get_entity
+from utils._file import create_filename, create_new_dir, exit_files
 
 
 async def download_file(media, chat_id, client):
@@ -22,15 +23,18 @@ async def download_file(media, chat_id, client):
     return filename
 
 
-async def download_profile(chat_id, photo, client, big=False):
-    entity = await get_entity(chat_id, client)
+async def download_profile_photo(entity, client, chat_id, chat_name):
+    dirname = f"Chat/{chat_id}/"
+    create_new_dir(dirname)
 
-    dirname = f'./Chat/{chat_id}/'
-
+    filename = f"{dirname}profile/{chat_name}"
     try:
-        filename = create_profile_name(dirname, photo.photo_id, big)
+        os.remove(f"{filename}.jpg")
     except:
-        filename = None
-    await client.download_profile_photo(entity, file=filename, download_big=big)
+        pass
+
+    # file = await client.download_profile_photo(entity, file=filename, download_big=False)
+    # if file is None:
+    #     filename = None
 
     return filename
