@@ -10,6 +10,7 @@ from utils.get_message import get_messages, get_lastest_message
 from utils.dowload_file import download_file, download_profile_photo
 from utils.get_entity import get_entity
 from utils._file import create_new_dir
+from utils.create_thumnail import create_thumbnail
 
 
 async def get_all_dialogs(
@@ -25,7 +26,11 @@ async def get_all_dialogs(
     data = []
 
     async for dialog in client.iter_dialogs(limit=limit):
-        entity = await get_entity(dialog.entity.id, client)
+        try:
+            entity = await get_entity(dialog.entity.id, client)
+        except:
+            return "entity error"
+
         filename = await download_profile_photo(entity, client, dialog.entity.id, dialog.name)
 
         user = dialog.message
@@ -56,6 +61,7 @@ async def get_all_messages(
     ids,
     from_user
 ):
+
     try:
         client = TelegramClient(StringSession(auth_key), api_id, api_hash)
         await client.connect()
@@ -85,5 +91,73 @@ async def get_all_messages(
         user = await client.get_entity(message.from_id)
         message = get_messages(message, user.username, media=filename)
         messages.append(message)
+
     return messages
 
+
+async def send_message(
+    auth_key,
+    chat_id,
+    message,
+    reply_to,
+    parse_mode,
+    link_preview,
+    clear_draft,
+    silent,
+    schedule,
+):
+    try:
+        client = TelegramClient(StringSession(auth_key), api_id, api_hash)
+        await client.connect()
+    except:
+        return "client error"
+
+    try:
+        entity = await get_entity(chat_id, client)
+    except:
+        return "entity error"
+
+    await client.send_message(
+        entity,
+        message=message,
+        reply_to=reply_to,
+        parse_mode=parse_mode,
+        link_preview=link_preview,
+        clear_draft=clear_draft,
+        silent=silent,
+        schedule=schedule
+    )
+
+    return message
+
+
+async def upload_file(
+    auth_key,
+    chat_id,
+    file,
+    caption,
+    thumb,
+):
+    try:
+        client = TelegramClient(StringSession(auth_key), api_id, api_hash)
+        await client.connect()
+    except:
+        return "client error"
+
+    try:
+        entity = await get_entity(chat_id, client)
+    except:
+        return "entity error"
+
+    thumb = create_thumbnail(thumb, (200, 200))
+
+    try:
+        await client.send_file(
+            entity,
+            file=file,
+            caption=caption,
+            thumb=thumb
+        )
+        return True
+    except:
+        return False

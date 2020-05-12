@@ -57,8 +57,7 @@ async def get_lastest_message(user, client, entity):
 
     elif user.text or user.raw_text:
         message = user.text
-
     else:
-        message = "-----**-----"
+        message = "unknow action yet"
 
     return message
