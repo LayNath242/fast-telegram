@@ -77,7 +77,15 @@ async def sendMessages(
 async def uploadFile(
     file: List[str],
     caption: str = None,
+    force_document: bool = False,
+    clear_draft: bool = False,
+    reply_to: int = None,
     thumb: str = None,
+    voice_note: bool = False,
+    video_note: bool = False,
+    silent: bool = False,
+    supports_streaming: bool = False,
+    schedule: datetime = None,
     chat_id: int = 1266629372,
     id: str = '5ea28612fc329b4980f45c39',
 ):
@@ -88,7 +96,15 @@ async def uploadFile(
         chat_id,
         file,
         caption,
-        thumb
+        force_document,
+        clear_draft,
+        reply_to,
+        thumb,
+        voice_note,
+        video_note,
+        silent,
+        supports_streaming,
+        schedule
     )
     if file:
         return {'data': 'upload success'}

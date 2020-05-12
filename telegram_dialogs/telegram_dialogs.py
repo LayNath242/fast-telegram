@@ -136,7 +136,15 @@ async def upload_file(
     chat_id,
     file,
     caption,
+    force_document,
+    clear_draft,
+    reply_to,
     thumb,
+    voice_note,
+    video_note,
+    silent,
+    supports_streaming,
+    schedule,
 ):
     try:
         client = TelegramClient(StringSession(auth_key), api_id, api_hash)
@@ -149,14 +157,23 @@ async def upload_file(
     except:
         return "entity error"
 
-    thumb = create_thumbnail(thumb, (200, 200))
+    if thumb:
+        thumb = create_thumbnail(thumb, (200, 200))
 
     try:
         await client.send_file(
             entity,
             file=file,
             caption=caption,
-            thumb=thumb
+            force_document=force_document,
+            clear_draft=clear_draft,
+            reply_to=reply_to,
+            thumb=thumb,
+            voice_note=voice_note,
+            video_note=video_note,
+            silent=silent,
+            supports_streaming=supports_streaming,
+            schedule=schedule,
         )
         return True
     except:
