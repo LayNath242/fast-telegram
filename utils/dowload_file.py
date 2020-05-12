@@ -32,9 +32,8 @@ async def download_profile_photo(entity, client, chat_id, chat_name):
         os.remove(f"{filename}.jpg")
     except:
         pass
-
-    # file = await client.download_profile_photo(entity, file=filename, download_big=False)
-    # if file is None:
-    #     filename = None
+    file = await client.download_profile_photo(entity, file=filename, download_big=False)
+    if file is None:
+        filename = None
 
     return filename
