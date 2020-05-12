@@ -59,29 +59,33 @@ async def get_all_messages(
     try:
         client = TelegramClient(StringSession(auth_key), api_id, api_hash)
         await client.connect()
-        messages = []
-        entity = await get_entity(chat_id, client)
-
-        async for message in client.iter_messages(
-                entity,
-                limit=limit,
-                search=search,
-                reverse=reverse,
-                offset_date=offset_date,
-                ids=ids,
-                from_user=from_user
-        ):
-            filename = None
-
-            if message.media:
-                filename = await download_file(message.file, chat_id, client)
-
-            user = await client.get_entity(message.from_id)
-            message = get_messages(message, user.username, media=filename)
-            messages.append(message)
     except:
-        message = "error can not get Message"
+        return "client error"
 
+    messages = []
+    try:
+        entity = await get_entity(chat_id, client)
+    except:
+        return "entity error"
+
+    async for message in client.iter_messages(
+            entity,
+            limit=limit,
+            search=search,
+            reverse=reverse,
+            offset_date=offset_date,
+            ids=ids,
+            from_user=from_user
+    ):
+        filename = None
+
+        if message.media:
+            filename = await download_file(message.file, chat_id, client)
+
+        user = await client.get_entity(message.from_id)
+        message = get_messages(message, user.username, media=filename)
+        messages.append(message)
     return messages
+
 
 # 5ea28612fc329b4980f45c39
