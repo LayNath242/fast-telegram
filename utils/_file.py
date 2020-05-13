@@ -6,27 +6,34 @@ import os
 def create_filename(direName, fileName, minetype):
     type = mimetypes.guess_extension(minetype)
     if type:
-        filename = f'{direName}{fileName}{type}'
+        filename = f'{direName}/{fileName}{type}'
     else:
-        filename = f'{direName}{fileName}.unknow'
+        filename = f'{direName}/{fileName}.unknow'
     return filename
 
 
-def create_new_dir(dirName):
+def create_new_dir(dirName, specific_dir):
     dir = './Chat'
     try:
         os.mkdir(dir)
     except FileExistsError:
         pass
+
     try:
         os.mkdir(dirName)
     except FileExistsError:
         pass
-    try:
-        profile = f'{dirName}profile'
-        os.mkdir(profile)
-    except FileExistsError:
-        pass
+
+    if specific_dir:
+        try:
+            specific_dir = f'{dirName}/{specific_dir}'
+            os.mkdir(specific_dir)
+        except FileExistsError:
+            pass
+
+        return specific_dir
+
+    return dirName
 
 
 def exit_files(dirName, filename, mimetype):
